@@ -1,6 +1,7 @@
 package mqtt
 
 import (
+	"de.janmeckelholt.jung/config"
 	"fmt"
 	"time"
 
@@ -8,7 +9,9 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func ServeMqtt(conf config.Config) {
+var Client mqtt.Client
+
+func ServeMqtt(conf *config.Config) {
 	opts := mqtt.NewClientOptions()
 	opts.AddBroker("mqtt:1883")
 	//opts.AddBroker("192.168.178.61:1883")
@@ -18,8 +21,8 @@ func ServeMqtt(conf config.Config) {
 	opts.SetDefaultPublishHandler(messagePubHandler)
 	opts.OnConnect = connectHandler
 	opts.OnConnectionLost = connectLostHandler
-	client := mqtt.NewClient(opts)
-	if token := client.Connect(); token.Wait() && token.Error() != nil {
+	Client = mqtt.NewClient(opts)
+	if token := Client.Connect(); token.Wait() && token.Error() != nil {
 		log.Errorf("user: __%s__, password: __%s__", conf.MqttUserName, conf.MqttPassword)
 		panic(token.Error())
 	}
