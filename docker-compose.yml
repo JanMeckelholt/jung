@@ -1,0 +1,33 @@
+version: '2.4'
+services:
+  jung:
+    platform: ${PLATFORM}
+    container_name: jung
+    build:
+      context: .
+      dockerfile: ./jung/Dockerfile
+    ports:
+      - "111:443"
+      - "112:1883"
+    depends_on:
+      - mosquitto
+    networks:
+      - mosquitto-net
+  mosquitto:
+    image: eclipse-mosquitto
+    container_name: mosquitto
+    ports:
+      - "1883:1883"
+    volumes:
+      - ./config:/mosquitto/config:rw
+      - ./data:/mosquitto/data:rw
+      - ./log:mosquitto/log:rw
+    networks:
+      - mosquitto-net
+    restart: unless-stopped
+
+
+networks:
+  proxy-net:
+  external:
+    name: mosquitto-net

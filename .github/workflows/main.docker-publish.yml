@@ -1,0 +1,41 @@
+name: Build main
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    name: Build, test and publish app Docker images
+    runs-on: ubuntu-latest
+    env:
+      DOCKER_REGISTRY: janmeckelholt.io
+      DOCKER_TARGET_PLATFORM: linux/amd64
+      PLATFORM: linux/amd64
+      DOCKER_BUILDKIT: 1
+      COMPOSE_DOCKER_CLI_BUILD: 1
+    steps:
+      - uses: actions/checkout@v4
+
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Available platforms
+        run: echo ${{ steps.buildx.outputs.platforms }}
+
+      - name: Build the docker-compose stack
+        run:  docker compose build
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Publish image(s)
+        run: |
+          docker tag jung-jung ${{ secrets.DOCKERHUB_USERNAME}}/jung:main-${{ github.sha }}  
+          docker push ${{ secrets.DOCKERHUB_USERNAME}}/jung:main-${{ github.sha }}
