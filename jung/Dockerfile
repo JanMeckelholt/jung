@@ -7,4 +7,5 @@ RUN go mod download
 RUN go mod tidy
 RUN go install .
 
-CMD ["/go/bin/de.janmeckelholt.jung"]
+#CMD ["/go/bin/de.janmeckelholt.jung"]
+CMD ["sleep", "5000"]
