@@ -29,7 +29,7 @@ func ServeTLS(handler http.Handler, addr int) {
 		}
 	}
 	log.Infof("Listening on :%d", addr)
-	serverErr := tlsServer.ServeTLS(lis, "./cert.pem", "./key.pem")
+	serverErr := tlsServer.ServeTLS(lis, "./certs/jung-server-cert.pem", "./certs/jung-server-key.pem")
 	defer func() {
 		teardown()
 	}()
