@@ -12,7 +12,8 @@ services:
     depends_on:
       - mosquitto
     networks:
-      - mosquitto-net
+      - proxy-net
+    restart: unless-stopped
   mosquitto:
     image: eclipse-mosquitto
     container_name: mosquitto
@@ -23,11 +24,11 @@ services:
       - ./data:/mosquitto/data:rw
       - ./log:mosquitto/log:rw
     networks:
-      - mosquitto-net
+      - proxy-net
     restart: unless-stopped
 
 
 networks:
   proxy-net:
   external:
-    name: mosquitto-net
+    name: proxy-net
