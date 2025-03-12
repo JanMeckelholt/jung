@@ -13,7 +13,7 @@ var Client mqtt.Client
 
 func ServeMqtt(conf *config.Config) {
 	opts := mqtt.NewClientOptions()
-	opts.AddBroker("mqtt:1883")
+	opts.AddBroker("mosquitto:1883")
 	//opts.AddBroker("192.168.178.61:1883")
 	opts.SetClientID("go_mqtt_client")
 	//opts.SetUsername(srv.Config.MqttUserName)
