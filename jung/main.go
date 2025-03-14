@@ -42,8 +42,7 @@ func Handler() http.Handler {
 					return
 				}
 				log.Infof("body: %s", body)
-				mqtt.Publish(mqtt.Client, "jung", string(body))
-				mqtt.Publish(mqtt.Client, "jung", req.URL.Path)
+				mqtt.Publish(mqtt.Client, "req.URL.Path", string(body))
 
 				rw.WriteHeader(http.StatusOK)
 				res, err := rw.Write(body)
