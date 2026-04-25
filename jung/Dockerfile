@@ -1,4 +1,4 @@
-FROM golang:1.20-buster
+FROM golang:1.22-bullseye
 ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get -yq update && apt-get -yq install gnupg2 ca-certificates cl-base64
 COPY ./jung/ /jung/
