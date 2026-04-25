@@ -1,16 +1,17 @@
 package main
 
 import (
-	"de.janmeckelholt.jung/config"
-	htpplistener "de.janmeckelholt.jung/htpp"
-	"de.janmeckelholt.jung/mqtt"
 	"fmt"
-	"github.com/caarlos0/env/v7"
-	"github.com/joho/godotenv"
-	log "github.com/sirupsen/logrus"
 	"io"
 	"net/http"
 	"strings"
+
+	"de.janmeckelholt.jung/config"
+	htpplistener "de.janmeckelholt.jung/htpp"
+	"de.janmeckelholt.jung/mqtt"
+	"github.com/caarlos0/env/v7"
+	"github.com/joho/godotenv"
+	log "github.com/sirupsen/logrus"
 )
 
 func main() {
@@ -27,12 +28,19 @@ func main() {
 	}
 
 	go mqtt.ServeMqtt(&conf)
-	htpplistener.ServeTLS(Handler(), 443)
+	htpplistener.Serve(Handler(), 80)
 
 }
 
 func Handler() http.Handler {
 	return http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
+		if proto := req.Header.Get("X-Forwarded-Proto"); proto != "" {
+			req.URL.Scheme = proto
+		}
+		if host := req.Header.Get("X-Forwarded-Host"); host != "" {
+			req.Host = host
+		}
+
 		switch {
 		case strings.HasPrefix(req.URL.Path, "/jung") && req.Method == http.MethodPost:
 			{

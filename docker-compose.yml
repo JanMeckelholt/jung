@@ -7,7 +7,7 @@ services:
       context: .
       dockerfile: ./jung/Dockerfile
     ports:
-      - "111:443"
+      - "111:80"
       - "112:1883"
     depends_on:
       - mosquitto
