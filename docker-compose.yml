@@ -18,11 +18,11 @@ services:
     image: eclipse-mosquitto
     container_name: mosquitto
     ports:
-      - "1883:1883"
+      - "1884:1883"
     volumes:
       - ./config:/mosquitto/config:rw
       - ./data:/mosquitto/data:rw
-      - ./log:mosquitto/log:rw
+      - ./log:/mosquitto/log:rw
     networks:
       - proxy-net
     restart: unless-stopped
