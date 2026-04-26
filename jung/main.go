@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
@@ -13,6 +14,19 @@ import (
 	"github.com/joho/godotenv"
 	log "github.com/sirupsen/logrus"
 )
+
+type DatapointAttributes struct {
+	Title string `json:"title"`
+	Value string `json:"value"`
+}
+
+type Datapoint struct {
+	Attributes DatapointAttributes `json:"attributes"`
+}
+
+type JungData struct {
+	Data []Datapoint `json:"data"`
+}
 
 func main() {
 
@@ -50,7 +64,26 @@ func Handler() http.Handler {
 					return
 				}
 				log.Infof("body: %s", body)
-				mqtt.Publish(mqtt.Client, req.URL.Path, string(body))
+
+				// Parse the JSON data
+				var jungData JungData
+				err = json.Unmarshal(body, &jungData)
+				if err != nil {
+					log.Errorf("Failed to parse JSON: %v", err)
+					http.Error(rw, "invalid JSON format", http.StatusBadRequest)
+					return
+				} 
+				if len(jungData.Data) <= 0 {
+					log.Errorf("No datapoints found in JSON")
+					http.Error(rw, "no datapoints found in JSON", http.StatusBadRequest)
+					return
+				}
+				title := jungData.Data[0].Attributes.Title
+				value := jungData.Data[0].Attributes.Value
+				log.Infof("Parsed datapoint - Title: %s, Value: %s", title, value)
+				
+
+				mqtt.Publish(mqtt.Client, req.URL.Path, value)
 
 				rw.WriteHeader(http.StatusOK)
 				res, err := rw.Write(body)
